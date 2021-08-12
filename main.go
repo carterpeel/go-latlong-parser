@@ -1,41 +1,41 @@
 package main
 
 import (
-	"./glp"
+	"flag"
 	"fmt"
+	"github.com/carterpeel/go-latlong-parser/glp"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/square/go-jose.v2/json"
 	"os"
-)
-
-var (
-	lat   = os.Getenv("lat")
-	long  = os.Getenv("long")
-	token = os.Getenv("apikey")
 )
 
 type ResponseData struct {
 	FormattedAddress string `json:"formatted_address,omitempty"`
 }
 
+
 func main() {
+	lat   := flag.String("lat", "", "Latitude")
+	long  := flag.String("long", "", "Longitude")
+	token := flag.String("apikey", "", "Your Google Maps API key")
+	flag.Parse()
 	l := logrus.New()
 	l.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat:   "",
 	})
 	l.SetOutput(os.Stdout)
 	switch {
-	case lat == "":
-		l.Logf(logrus.FatalLevel, "'lat' env field cannot be empty")
+	case *lat == "":
+		flag.PrintDefaults()
 		return
-	case long == "":
-		l.Logf(logrus.FatalLevel, "'long' env field cannot be empty")
+	case *long == "":
+		flag.PrintDefaults()
 		return
-	case token == "":
-		l.Logf(logrus.FatalLevel, "'apikey' env field cannot be empty ")
+	case *token == "":
+		flag.PrintDefaults()
 		return
 	}
-	lData, err := glp.NewLatLong(lat, long, token)
+	lData, err := glp.NewLatLong(*lat, *long, *token)
 	if err != nil {
 		l.Logf(logrus.FatalLevel, "Could not generate new location structure from requested data: %s\n", err)
 		return
@@ -55,5 +55,6 @@ func main() {
 	}
 	fmt.Print(string(jsonBytes))
 }
+
 
 
