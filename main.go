@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/carterpeel/go-latlong-parser/glp"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/square/go-jose.v2/json"
 	"os"
 )
 
@@ -37,23 +36,15 @@ func main() {
 	}
 	lData, err := glp.NewLatLong(*lat, *long, *token)
 	if err != nil {
-		l.Logf(logrus.FatalLevel, "Could not generate new location structure from requested data: %s\n", err)
+		l.Logf(logrus.FatalLevel, "Could not generate new location structure from requested data: %s", err)
 		return
 	}
 	addy, err := lData.GetAddress()
 	if err != nil {
-		l.Logf(logrus.FatalLevel, "Could not retrieve an address with the provided coordinates: %s\n", err)
+		l.Logf(logrus.FatalLevel, "Could not retrieve an address with the provided coordinates: %s", err)
 		return
 	}
-	jsonData := &ResponseData{
-		FormattedAddress: addy,
-	}
-	jsonBytes, err := json.Marshal(jsonData)
-	if err != nil {
-		l.Logf(logrus.FatalLevel, "Could not parse response data into a JSON struct: %s\n", err)
-		return
-	}
-	fmt.Print(string(jsonBytes))
+	fmt.Print(addy)
 }
 
 
